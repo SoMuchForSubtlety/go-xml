@@ -6,7 +6,7 @@ import (
 	"path"
 	"testing"
 
-	"aqwari.net/xml/xsdgen"
+	"powerbot-trading.com/go-xml/xsdgen"
 )
 
 type testLogger struct {

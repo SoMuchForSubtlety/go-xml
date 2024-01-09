@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"aqwari.net/xml/xmltree"
+	"powerbot-trading.com/go-xml/xmltree"
 )
 
 func ExampleElement_Search() {

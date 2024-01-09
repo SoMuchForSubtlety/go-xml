@@ -1,11 +1,11 @@
-package main // import "aqwari.net/xml/cmd/wsdlgen"
+package main // import "powerbot-trading.com/go-xml/cmd/wsdlgen"
 
 import (
 	"log"
 	"os"
 
-	"aqwari.net/xml/wsdlgen"
-	"aqwari.net/xml/xsdgen"
+	"powerbot-trading.com/go-xml/wsdlgen"
+	"powerbot-trading.com/go-xml/xsdgen"
 )
 
 func main() {

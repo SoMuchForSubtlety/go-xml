@@ -7,9 +7,9 @@ import (
 	"log"
 	"os"
 
-	"aqwari.net/xml/internal/commandline"
-	"aqwari.net/xml/internal/gen"
-	"aqwari.net/xml/xsdgen"
+	"powerbot-trading.com/go-xml/internal/commandline"
+	"powerbot-trading.com/go-xml/internal/gen"
+	"powerbot-trading.com/go-xml/xsdgen"
 )
 
 // The GenSource method converts the AST returned by GenAST to formatted

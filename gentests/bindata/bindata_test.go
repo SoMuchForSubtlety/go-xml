@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"aqwari.net/xml/xmltree"
+	"powerbot-trading.com/go-xml/xmltree"
 )
 
 func TestBindata(t *testing.T) {

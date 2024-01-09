@@ -8,9 +8,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"aqwari.net/xml/internal/commandline"
-	"aqwari.net/xml/internal/gen"
-	"aqwari.net/xml/xsd"
+	"powerbot-trading.com/go-xml/internal/commandline"
+	"powerbot-trading.com/go-xml/internal/gen"
+	"powerbot-trading.com/go-xml/xsd"
 )
 
 // GenCode reads all xml schema definitions from the provided

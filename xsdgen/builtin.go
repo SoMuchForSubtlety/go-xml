@@ -3,7 +3,7 @@ package xsdgen
 import (
 	"go/ast"
 
-	"aqwari.net/xml/xsd"
+	"powerbot-trading.com/go-xml/xsd"
 )
 
 func builtinExpr(b xsd.Builtin) ast.Expr {
