@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"aqwari.net/xml/wsdlgen"
+	"powerbot-trading.com/go-xml/wsdlgen"
 )
 
 func main() {

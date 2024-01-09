@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"aqwari.net/xml/internal/gen"
-	"aqwari.net/xml/xmltree"
-	"aqwari.net/xml/xsd"
-	"aqwari.net/xml/xsdgen"
+	"powerbot-trading.com/go-xml/internal/gen"
+	"powerbot-trading.com/go-xml/xmltree"
+	"powerbot-trading.com/go-xml/xsd"
+	"powerbot-trading.com/go-xml/xsdgen"
 )
 
 func glob(pat string) string {

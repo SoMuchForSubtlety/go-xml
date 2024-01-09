@@ -1,11 +1,11 @@
-[![GoDoc](https://godoc.org/aqwari.net/xml?status.svg)](https://godoc.org/aqwari.net/xml) [![Build Status](https://travis-ci.org/droyo/go-xml.svg?branch=master)](https://travis-ci.org/droyo/go-xml)
+[![GoDoc](https://godoc.org/powerbot-trading.com/go-xml?status.svg)](https://godoc.org/powerbot-trading.com/go-xml) [![Build Status](https://travis-ci.org/droyo/go-xml.svg?branch=master)](https://travis-ci.org/droyo/go-xml)
 
 ## Installation
 
 Requires go 1.9 or greater for golang.org/x/html dependency.
 
 ```
-go get aqwari.net/xml/...
+go get powerbot-trading.com/go-xml/...
 ```
 
 This repository contains a collection of Go packages for working

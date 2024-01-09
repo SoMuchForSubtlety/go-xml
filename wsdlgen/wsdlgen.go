@@ -7,7 +7,7 @@
 //
 // Code generation for the wsdlgen package can be configured by using
 // the provided Option functions.
-package wsdlgen // import "aqwari.net/xml/wsdlgen"
+package wsdlgen // import "powerbot-trading.com/go-xml/wsdlgen"
 
 import (
 	"encoding/xml"
@@ -17,10 +17,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"aqwari.net/xml/internal/gen"
-	"aqwari.net/xml/wsdl"
-	"aqwari.net/xml/xsd"
-	"aqwari.net/xml/xsdgen"
+	"powerbot-trading.com/go-xml/internal/gen"
+	"powerbot-trading.com/go-xml/wsdl"
+	"powerbot-trading.com/go-xml/xsd"
+	"powerbot-trading.com/go-xml/xsdgen"
 )
 
 // Types conforming to the Logger interface can receive information about

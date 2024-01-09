@@ -1,4 +1,4 @@
-package main // import "aqwari.net/xml/cmd/xsdparse"
+package main // import "powerbot-trading.com/go-xml/cmd/xsdparse"
 
 import (
 	"flag"
@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"aqwari.net/xml/xmltree"
-	"aqwari.net/xml/xsd"
+	"powerbot-trading.com/go-xml/xmltree"
+	"powerbot-trading.com/go-xml/xsd"
 )
 
 var (

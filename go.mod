@@ -1,4 +1,4 @@
-module aqwari.net/xml
+module powerbot-trading.com/go-xml
 
 go 1.15
 

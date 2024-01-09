@@ -1,5 +1,5 @@
 language: go
-go_import_path: aqwari.net/xml
+go_import_path: powerbot-trading.com/go-xml
 go:
   - "1.9"
   - "1.10"

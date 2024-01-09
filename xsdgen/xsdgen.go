@@ -1,4 +1,4 @@
-package xsdgen // import "aqwari.net/xml/xsdgen"
+package xsdgen // import "powerbot-trading.com/go-xml/xsdgen"
 
 import (
 	"bytes"
@@ -12,10 +12,10 @@ import (
 	"strconv"
 	"strings"
 
-	"aqwari.net/xml/internal/dependency"
-	"aqwari.net/xml/internal/gen"
-	"aqwari.net/xml/xmltree"
-	"aqwari.net/xml/xsd"
+	"powerbot-trading.com/go-xml/internal/dependency"
+	"powerbot-trading.com/go-xml/internal/gen"
+	"powerbot-trading.com/go-xml/xmltree"
+	"powerbot-trading.com/go-xml/xsd"
 )
 
 type orderedStringMap interface {
