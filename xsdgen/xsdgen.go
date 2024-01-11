@@ -192,7 +192,6 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 		case *xsd.ComplexType:
 			xmlName = t.Name
 		default:
-			// TODO: do we need to handle this case too?
 			continue
 		}
 		name := cfg.public(xmlName)
