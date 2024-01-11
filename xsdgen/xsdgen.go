@@ -181,7 +181,7 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 		allTypes = append(allTypes, types...)
 	}
 
-	takenNames := make(map[string]struct{})
+	takenNames := make(map[string]xml.Name)
 	cfg.typeNameOverrides = make(map[xml.Name]string)
 	// first pass to deduplicate type names
 	for _, t := range allTypes {
@@ -196,8 +196,8 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 			continue
 		}
 		name := cfg.public(xmlName)
-		_, taken := takenNames[name]
-		if taken {
+
+		if existing, taken := takenNames[name]; taken && existing != xmlName {
 			var suffix int
 			for taken {
 				suffix++
@@ -206,19 +206,18 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 			name += strconv.Itoa(suffix)
 			cfg.typeNameOverrides[xmlName] = name
 		}
-		takenNames[name] = struct{}{}
+		takenNames[name] = xmlName
 	}
 
 	for _, t := range allTypes {
-			specs, err := cfg.genTypeSpec(t)
-			if err != nil {
-				errList = append(errList, fmt.Errorf("gen type %q: %v",
-					xsd.XMLName(t).Local, err))
-			} else {
-				for _, s := range specs {
-					code.names[xsd.XMLName(s.xsdType)] = s.name
-					code.decls[s.name] = s
-				}
+		specs, err := cfg.genTypeSpec(t)
+		if err != nil {
+			errList = append(errList, fmt.Errorf("gen type %q: %v",
+				xsd.XMLName(t).Local, err))
+		} else {
+			for _, s := range specs {
+				code.names[xsd.XMLName(s.xsdType)] = s.name
+				code.decls[s.name] = s
 			}
 		}
 	}
