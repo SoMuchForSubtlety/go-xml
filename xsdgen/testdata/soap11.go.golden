@@ -9,26 +9,26 @@ import (
 )
 
 // 'Array' is a complex type for accessors identified by position
-type Array struct {
+type Array1 struct {
 	Items     []string `xml:",any"`
 	ArrayType string   `xml:"arrayType,attr,omitempty"`
 }
 
-type Base64 []byte
+type Base641 []byte
 
-func (t *Base64) UnmarshalText(text []byte) error {
+func (t *Base641) UnmarshalText(text []byte) error {
 	return (*xsdBase64Binary)(t).UnmarshalText(text)
 }
-func (t Base64) MarshalText() ([]byte, error) {
+func (t Base641) MarshalText() ([]byte, error) {
 	return xsdBase64Binary(t).MarshalText()
 }
 
 // Must match the pattern 0|1
-type Root bool
+type Root1 bool
 
-type Struct []string
+type Struct1 []string
 
-func (a Struct) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (a Struct1) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	var output struct {
 		ArrayType string   `xml:"http://schemas.xmlsoap.org/wsdl/ arrayType,attr"`
 		Items     []string `xml:" item"`
@@ -38,7 +38,7 @@ func (a Struct) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	output.ArrayType = "ns1:anyType[]"
 	return e.EncodeElement(&output, start)
 }
-func (a *Struct) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
+func (a *Struct1) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (err error) {
 	var tok xml.Token
 	for tok, err = d.Token(); err == nil; tok, err = d.Token() {
 		if tok, ok := tok.(xml.StartElement); ok {

@@ -59,6 +59,11 @@ func TestExamples(t *testing.T) {
 			namespace:   "http://example.org",
 			sourceFiles: []string{"testdata/mixed-complex.xsd"},
 		},
+		{
+			name:        "dupe names",
+			namespace:   "",
+			sourceFiles: []string{"testdata/duplicate-names.xsd", "testdata/duplicate-names2.xsd"},
+		},
 	}
 
 	for _, c := range cases {
@@ -86,7 +91,10 @@ func testGen(t *testing.T, ns string, files ...string) string {
 	cfg.Option(DefaultOptions...)
 	cfg.Option(LogOutput((*testLogger)(t)))
 
-	args := []string{"-v", "-o", file.Name(), "-ns", ns}
+	args := []string{"-v", "-o", file.Name()}
+	if ns != "" {
+		args = append(args, "-ns", ns)
+	}
 	err = cfg.GenCLI(append(args, files...)...)
 	if err != nil {
 		t.Error(err)

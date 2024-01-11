@@ -173,11 +173,43 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 		}
 	}
 
+	var allTypes []xsd.Type
 	for _, primary := range primaries {
 		cfg.debugf("flattening type hierarchy for schema %q", primary.TargetNS)
 		types := cfg.flatten(primary.Types)
 		types = cfg.expandComplexTypes(types)
-		for _, t := range types {
+		allTypes = append(allTypes, types...)
+	}
+
+	takenNames := make(map[string]struct{})
+	cfg.typeNameOverrides = make(map[xml.Name]string)
+	// first pass to deduplicate type names
+	for _, t := range allTypes {
+		var xmlName xml.Name
+		switch t := t.(type) {
+		case *xsd.SimpleType:
+			xmlName = t.Name
+		case *xsd.ComplexType:
+			xmlName = t.Name
+		default:
+			// TODO: do we need to handle this case too?
+			continue
+		}
+		name := cfg.public(xmlName)
+		_, taken := takenNames[name]
+		if taken {
+			var suffix int
+			for taken {
+				suffix++
+				_, taken = takenNames[name+strconv.Itoa(suffix)]
+			}
+			name += strconv.Itoa(suffix)
+			cfg.typeNameOverrides[xmlName] = name
+		}
+		takenNames[name] = struct{}{}
+	}
+
+	for _, t := range allTypes {
 			specs, err := cfg.genTypeSpec(t)
 			if err != nil {
 				errList = append(errList, fmt.Errorf("gen type %q: %v",
@@ -640,7 +672,7 @@ func (gen *nameGenerator) attribute(base xml.Name) ast.Expr {
 }
 
 func (gen *nameGenerator) element(base xml.Name) ast.Expr {
-	name := gen.cfg.public(base)
+	name := gen.cfg.fieldName(base)
 	if _, ok := gen.taken[name]; !ok {
 		gen.taken[name] = struct{}{}
 		return ast.NewIdent(name)

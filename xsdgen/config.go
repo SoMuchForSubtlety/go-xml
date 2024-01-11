@@ -42,6 +42,8 @@ type Config struct {
 	// if populated, only types that are true in this map
 	// will be selected.
 	allowTypes map[xml.Name]bool
+
+	typeNameOverrides map[xml.Name]string
 }
 
 type typeTransform func(xsd.Schema, xsd.Type) xsd.Type
@@ -470,7 +472,17 @@ func (cfg *Config) NameOf(name xml.Name) string {
 	return cfg.public(name)
 }
 
+func (cfg *Config) fieldName(name xml.Name) string {
+	if cfg.nameTransform != nil {
+		name = cfg.nameTransform(name)
+	}
+	return strings.Title(name.Local)
+}
+
 func (cfg *Config) public(name xml.Name) string {
+	if override, ok := cfg.typeNameOverrides[name]; ok {
+		return override
+	}
 	if cfg.nameTransform != nil {
 		name = cfg.nameTransform(name)
 	}
