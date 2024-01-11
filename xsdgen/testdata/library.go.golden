@@ -9,7 +9,7 @@ import (
 )
 
 type Authors struct {
-	Person []string `xml:"http://dyomedea.com/ns/library person"`
+	Person []Person `xml:"http://dyomedea.com/ns/library person"`
 }
 
 type BookType struct {
@@ -21,7 +21,7 @@ type BookType struct {
 }
 
 type Characters struct {
-	Person []string `xml:"http://dyomedea.com/ns/library person"`
+	Person []Person `xml:"http://dyomedea.com/ns/library person"`
 }
 
 type Library struct {

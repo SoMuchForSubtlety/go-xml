@@ -471,9 +471,11 @@ func deref(ref, real *xmltree.Element) *xmltree.Element {
 	// Attributes added to the reference overwrite attributes in the
 	// referenced element.
 	for _, attr := range ref.StartElement.Attr {
-		if (attr.Name != xml.Name{"", "ref"}) {
-			el.SetAttr(attr.Name.Space, attr.Name.Local, attr.Value)
+		// TODO: can we skip all type attrs instead of just "anyType"?
+		if (attr.Name == xml.Name{"", "ref"} || (attr.Name == xml.Name{"", "type"} && ref.Resolve(attr.Value).Local == "anyType")) {
+			continue
 		}
+		el.SetAttr(attr.Name.Space, attr.Name.Local, attr.Value)
 	}
 
 	return el

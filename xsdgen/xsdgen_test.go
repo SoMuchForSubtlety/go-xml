@@ -61,8 +61,12 @@ func TestExamples(t *testing.T) {
 		},
 		{
 			name:        "dupe names",
-			namespace:   "",
 			sourceFiles: []string{"testdata/duplicate-names.xsd", "testdata/duplicate-names2.xsd"},
+		},
+		{
+			name:        "inderect element ref",
+			namespace:   "http://example.org/",
+			sourceFiles: []string{"testdata/indirect-ref.xsd"},
 		},
 	}
 
