@@ -538,26 +538,42 @@ func (cfg *Config) flatten1(t xsd.Type, push func(xsd.Type), depth int) xsd.Type
 		// is useful enough for its own Go type. Our threshold for "useful enough"
 		// is pretty low; if we can attach a godoc comment to it describing how it
 		// should be used, that's good enough.
+		var useT bool
 		if t.List || len(t.Union) > 0 {
-			return t
+			useT = true
 		}
 		if nonTrivialBuiltin(t.Base) {
-			return t
+			useT = true
 		}
 		if len(t.Restriction.Enum) > 0 {
-			t.Doc = "May be one of " + strings.Join(t.Restriction.Enum, ", ")
-			return t
+			doc := "May be one of " + strings.Join(t.Restriction.Enum, ", ")
+			if !strings.Contains(t.Doc, doc) {
+				t.Doc += "\n" + doc
+			}
+			useT = true
 		}
 		if t.Restriction.Pattern != nil {
-			t.Doc = "Must match the pattern " + t.Restriction.Pattern.String()
-			return t
+			doc := "Must match the pattern " + t.Restriction.Pattern.String()
+			if !strings.Contains(t.Doc, doc) {
+				t.Doc += "\n" + doc
+			}
+			useT = true
 		}
 		if t.Restriction.MaxLength != 0 {
-			t.Doc = "May be no more than " + strconv.Itoa(t.Restriction.MaxLength) + " items long"
-			return t
+			doc := "May be no more than " + strconv.Itoa(t.Restriction.MaxLength) + " items long"
+			if !strings.Contains(t.Doc, doc) {
+				t.Doc += "\n" + doc
+			}
+			useT = true
 		}
 		if t.Restriction.MinLength != 0 {
-			t.Doc = "Must be at least " + strconv.Itoa(t.Restriction.MinLength) + " items long"
+			doc := "Must be at least " + strconv.Itoa(t.Restriction.MinLength) + " items long"
+			if !strings.Contains(t.Doc, doc) {
+				t.Doc += "\n" + doc
+			}
+			useT = true
+		}
+		if useT {
 			return t
 		}
 		return t.Base
