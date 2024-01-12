@@ -2,6 +2,7 @@
 
 package ws
 
+// type for weekday
 // May be one of MON, TUE, WED, THU, FRI, SAT, SUN
 type DType string
 

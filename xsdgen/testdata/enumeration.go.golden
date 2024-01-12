@@ -2,6 +2,7 @@
 
 package ws
 
+// type for weekday
 // May be one of MON, TUE, WED, THU, FRI, SAT, SUN
 type DType string
 
@@ -15,6 +16,7 @@ const (
 	DType_SUN DType = "SUN"
 )
 
+// float enum
 // May be one of 0.9, 0.333333333, 0.0
 type FloatType float64
 
@@ -24,6 +26,7 @@ const (
 	FloatType_0_0         FloatType = 0.0
 )
 
+// integer enum
 // May be one of 1, 2, 3
 type IntType int
 
