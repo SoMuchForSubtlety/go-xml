@@ -3,7 +3,7 @@
 package ws
 
 type ReferencedType struct {
-	Fild1 string `xml:"http://example.org/ fild1"`
+	Field1 string `xml:"http://example.org/ field1"`
 }
 
 type Type1 struct {

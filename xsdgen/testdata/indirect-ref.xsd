@@ -8,7 +8,7 @@
   </xs:complexType>
   <xs:complexType name="ReferencedType">
     <xs:sequence>
-      <xs:element maxOccurs="1" minOccurs="1" name="fild1" nillable="false" type="xs:string">
+      <xs:element maxOccurs="1" minOccurs="1" name="field1" nillable="false" type="xs:string">
       </xs:element>
     </xs:sequence>
   </xs:complexType>
