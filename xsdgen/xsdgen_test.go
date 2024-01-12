@@ -68,6 +68,11 @@ func TestExamples(t *testing.T) {
 			namespace:   "http://example.org/",
 			sourceFiles: []string{"testdata/indirect-ref.xsd"},
 		},
+		{
+			name:        "dupe type 2",
+			namespace:   "http://example.org/",
+			sourceFiles: []string{"testdata/dupe-enum.xsd"},
+		},
 	}
 
 	for _, c := range cases {

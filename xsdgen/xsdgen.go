@@ -181,7 +181,7 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 		allTypes = append(allTypes, types...)
 	}
 
-	takenNames := make(map[string]xml.Name)
+	takenNames := make(map[string]xsd.Type)
 	cfg.typeNameOverrides = make(map[xml.Name]string)
 	// first pass to deduplicate type names
 	for _, t := range allTypes {
@@ -195,17 +195,25 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 			continue
 		}
 		name := cfg.public(xmlName)
-
-		if existing, taken := takenNames[name]; taken && existing != xmlName {
-			var suffix int
-			for taken {
-				suffix++
-				_, taken = takenNames[name+strconv.Itoa(suffix)]
+		if existing, taken := takenNames[name]; taken {
+			var existingName xml.Name
+			switch existing := existing.(type) {
+			case *xsd.SimpleType:
+				existingName = existing.Name
+			case *xsd.ComplexType:
+				existingName = existing.Name
 			}
-			name += strconv.Itoa(suffix)
-			cfg.typeNameOverrides[xmlName] = name
+			if existingName != xmlName && !xsd.TypesEqual(t, existing) {
+				var suffix int
+				for taken {
+					suffix++
+					_, taken = takenNames[name+strconv.Itoa(suffix)]
+				}
+				name += strconv.Itoa(suffix)
+				cfg.typeNameOverrides[xmlName] = name
+			}
 		}
-		takenNames[name] = xmlName
+		takenNames[name] = t
 	}
 
 	for _, t := range allTypes {

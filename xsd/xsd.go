@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"time"
 
 	"github.com/SoMuchForSubtlety/go-xml/xmltree"
@@ -36,6 +37,107 @@ const (
 type Type interface {
 	// just for compile-time type checking
 	isType()
+}
+
+func TypesEqual(a, b Type) bool {
+	switch a := a.(type) {
+	case *SimpleType:
+		switch b := b.(type) {
+		case *SimpleType:
+			return simpleTypeEqual(a, b)
+		default:
+			return false
+		}
+	case *ComplexType:
+		switch b := b.(type) {
+		case *ComplexType:
+			return complexTypeEqual(a, b)
+		default:
+			return false
+		}
+	case Builtin:
+		switch b := b.(type) {
+		case Builtin:
+			return a == b
+		default:
+			return false
+		}
+	case linkedType:
+		// FIXME: implement
+		return false
+	default:
+		return false
+	}
+}
+
+func unionsEqual(a []Type, b []Type) bool {
+	// TODO: handle out of order
+	if len(a) != len(b) {
+		// TODO: handle duplicate union entries making one list longer
+		return false
+	}
+	for i := range a {
+		if !TypesEqual(a[i], b[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func restrictionsEqual(a Restriction, b Restriction) bool {
+	if len(a.Enum) != len(b.Enum) {
+		// TODO: handle duplicate union entries making one list longer
+		return false
+	}
+	aEnum := make([]string, len(a.Enum))
+	bEnum := make([]string, len(b.Enum))
+	copy(aEnum, a.Enum)
+	copy(bEnum, b.Enum)
+	sort.Strings(aEnum)
+	sort.Strings(bEnum)
+	for i := range aEnum {
+		if aEnum[i] != bEnum[i] {
+			return false
+		}
+	}
+	if a.Min != b.Min || a.Max != b.Max ||
+		a.Length != b.Length || a.MinLength != b.MinLength || a.MaxLength != b.MaxLength ||
+		a.MinDate != b.MinDate || a.MaxDate != b.MaxDate ||
+		a.Precision != b.Precision ||
+		a.TotalDigits != b.TotalDigits {
+		return false
+	}
+
+	if (a.Pattern != nil && b.Pattern == nil) ||
+		(a.Pattern == nil && b.Pattern != nil) ||
+		(a.Pattern != nil && a.Pattern.String() != b.Pattern.String()) {
+		return false
+	}
+
+	return true
+}
+
+func simpleTypeEqual(a, b *SimpleType) bool {
+	if !TypesEqual(a.Base, b.Base) {
+		return false
+	}
+	if !unionsEqual(a.Union, b.Union) {
+		return false
+	}
+	if !restrictionsEqual(a.Restriction, b.Restriction) {
+		return false
+	}
+	if a.List != b.List {
+		return false
+	}
+
+	return true
+}
+
+func complexTypeEqual(a, b *ComplexType) bool {
+	// FIXME: implement
+	return false
 }
 
 // An Element describes an XML element that may appear as part of a complex

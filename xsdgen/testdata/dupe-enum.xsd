@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://example.org/" targetNamespace="http://example.org/">
+
+  <xs:element name="TypeA">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="dType">
+          <xs:simpleType>
+            <xs:annotation>
+              <xs:documentation>type for weekday</xs:documentation>
+            </xs:annotation>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="MON" />
+              <xs:enumeration value="TUE" />
+              <xs:enumeration value="WED" />
+              <xs:enumeration value="THU" />
+              <xs:enumeration value="FRI" />
+              <xs:enumeration value="SAT" />
+              <xs:enumeration value="SUN" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="TypeB">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DType">
+          <xs:simpleType>
+            <xs:annotation>
+              <xs:documentation>type for weekday</xs:documentation>
+            </xs:annotation>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="MON" />
+              <xs:enumeration value="TUE" />
+              <xs:enumeration value="WED" />
+              <xs:enumeration value="THU" />
+              <xs:enumeration value="FRI" />
+              <xs:enumeration value="SAT" />
+              <xs:enumeration value="SUN" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
