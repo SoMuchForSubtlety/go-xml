@@ -957,7 +957,7 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 
 	data.Overrides = nonDefaultOverrides
 	marshal, err = gen.Func("MarshalXML").
-		Receiver("t *"+data.Type).
+		Receiver("t "+data.Type).
 		Args("e *xml.Encoder", "start xml.StartElement").
 		Returns("error").
 		BodyTmpl(`
@@ -968,7 +968,7 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 				{{.FieldName}} *{{.ToType}}`+"`{{.Tag}}`"+`
 				{{end -}}
 			}
-			layout.T = (*T)(t)
+			layout.T = (*T)(&t)
 			{{- range .Overrides}}
 			layout.{{.FieldName}} = (*{{.ToType}})(&layout.T.{{.FieldName}})
 			{{end -}}

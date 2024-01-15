@@ -73,6 +73,18 @@ func TestExamples(t *testing.T) {
 			namespace:   "http://example.org/",
 			sourceFiles: []string{"testdata/dupe-enum.xsd"},
 		},
+		{
+			name:        "anon",
+			sourceFiles: []string{"testdata/anon.xsd"},
+		},
+		{
+			name:        "anon2",
+			sourceFiles: []string{"testdata/anon2.xsd"},
+		},
+		{
+			name:        "redundant union",
+			sourceFiles: []string{"testdata/redundant-union.xsd"},
+		},
 	}
 
 	for _, c := range cases {

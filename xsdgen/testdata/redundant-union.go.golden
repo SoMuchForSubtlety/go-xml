@@ -2,8 +2,6 @@
 
 package ws
 
-import "encoding/xml"
-
 // May be one of A, B, C
 type EnumType string
 
@@ -14,5 +12,5 @@ const (
 )
 
 type Type1 struct {
-	Elem    []EnumType `xml:"Elem,omitempty"`
+	Elem []EnumType `xml:"http://example.org/ Elem,omitempty"`
 }

@@ -23,13 +23,13 @@ type MyType2 struct {
 	Length int    `xml:"length,attr,omitempty"`
 }
 
-func (t *MyType2) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (t MyType2) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	type T MyType2
 	var layout struct {
 		*T
 		Value *xsdBase64Binary `xml:",chardata"`
 	}
-	layout.T = (*T)(t)
+	layout.T = (*T)(&t)
 	layout.Value = (*xsdBase64Binary)(&layout.T.Value)
 	return e.EncodeElement(layout, start)
 }
@@ -49,13 +49,13 @@ type MyType3 struct {
 	Length int       `xml:"length,attr,omitempty"`
 }
 
-func (t *MyType3) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (t MyType3) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	type T MyType3
 	var layout struct {
 		*T
 		Value *xsdDate `xml:",chardata"`
 	}
-	layout.T = (*T)(t)
+	layout.T = (*T)(&t)
 	layout.Value = (*xsdDate)(&layout.T.Value)
 	return e.EncodeElement(layout, start)
 }
@@ -76,14 +76,14 @@ type MyType4 struct {
 	Timestamp time.Time `xml:"http://example.org/ timestamp"`
 }
 
-func (t *MyType4) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (t MyType4) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	type T MyType4
 	var layout struct {
 		*T
 		Blob      *xsdBase64Binary `xml:"http://example.org/ blob"`
 		Timestamp *xsdDateTime     `xml:"http://example.org/ timestamp"`
 	}
-	layout.T = (*T)(t)
+	layout.T = (*T)(&t)
 	layout.Blob = (*xsdBase64Binary)(&layout.T.Blob)
 	layout.Timestamp = (*xsdDateTime)(&layout.T.Timestamp)
 	return e.EncodeElement(layout, start)
