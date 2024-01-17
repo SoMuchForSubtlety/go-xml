@@ -348,52 +348,49 @@ func (cfg *Config) expandComplexTypes(types []xsd.Type) []xsd.Type {
 	}
 
 	graph.Flatten(func(i int) {
-		c := alltypes[i].(*xsd.ComplexType)
-		b, ok := c.Base.(*xsd.ComplexType)
+		extendedType := alltypes[i].(*xsd.ComplexType)
+		baseType, ok := extendedType.Base.(*xsd.ComplexType)
 		if !ok {
 			return
 		}
 
-		cfg.debugf("complexType %s: expanding base %s fields",
-			c.Name.Local, b.Name.Local)
+		cfg.debugf("complexType %s: expanding base %s fields", extendedType.Name.Local, baseType.Name.Local)
 
 		shadowedElements := make(map[xml.Name]struct{})
 		shadowedAttributes := make(map[xml.Name]struct{})
 
-		for _, el := range c.Elements {
+		for _, el := range extendedType.Elements {
 			shadowedElements[el.Name] = struct{}{}
 		}
-		for _, attr := range c.Attributes {
+		for _, attr := range extendedType.Attributes {
 			shadowedAttributes[attr.Name] = struct{}{}
 		}
 
 		elements := []*xsd.Element{}
-		for _, el := range b.Elements {
+		for _, el := range baseType.Elements {
+			extendedType.InheritedElements = append(extendedType.InheritedElements, el)
 			if _, ok := shadowedElements[el.Name]; !ok {
 				elements = append(elements, el)
 			} else {
-				cfg.debugf("complexType %s: extended element %s is overrided",
-					c.Name.Local, el.Name.Local)
+				cfg.debugf("complexType %s: extended element %s is overrided", extendedType.Name.Local, el.Name.Local)
 			}
 		}
-		c.Elements = append(elements, c.Elements...)
-		for _, attr := range b.Attributes {
+		extendedType.Elements = append(elements, extendedType.Elements...)
+		for _, attr := range baseType.Attributes {
 			if _, ok := shadowedAttributes[attr.Name]; !ok {
-				c.Attributes = append(c.Attributes, attr)
+				extendedType.Attributes = append(extendedType.Attributes, attr)
 			} else {
-				cfg.debugf("complexType %s: extended attribute %s is overrided",
-					c.Name.Local, attr.Name.Local)
+				cfg.debugf("complexType %s: extended attribute %s is overrided", extendedType.Name.Local, attr.Name.Local)
 			}
 		}
 
-		for base := c.Base; base != nil; base = xsd.Base(base) {
+		for base := extendedType.Base; base != nil; base = xsd.Base(base) {
 			if _, ok := base.(*xsd.ComplexType); !ok {
 				break
 			}
 		}
-		c.Extends = false
 
-		alltypes[i] = c
+		alltypes[i] = extendedType
 	})
 	return types
 }
@@ -891,24 +888,16 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 		xsdType:     t,
 		helperTypes: helperTypes,
 	}
-	if len(overrides) > 0 {
-		unmarshal, marshal, err := cfg.genComplexTypeMethods(t, overrides)
+	methods, err := cfg.genComplexTypeMethods(t, overrides)
 		if err != nil {
 			return result, err
-		} else {
-			if unmarshal != nil {
-				s.methods = append(s.methods, unmarshal)
-			}
-			if marshal != nil {
-				s.methods = append(s.methods, marshal)
-			}
-		}
 	}
+	s.methods = append(s.methods, methods...)
 	result = append(result, s)
 	return result, nil
 }
 
-func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOverride) (marshal, unmarshal *ast.FuncDecl, err error) {
+func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOverride) ([]*ast.FuncDecl, error) {
 	var data struct {
 		Overrides []fieldOverride
 		Type      string
@@ -916,7 +905,44 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 	data.Overrides = overrides
 	data.Type = cfg.public(t.Name)
 
-	unmarshal, err = gen.Func("UnmarshalXML").
+	var methods []*ast.FuncDecl
+	for _, elem := range t.InheritedElements {
+		retType := cfg.exprString(elem.Type)
+		if elem.Plural {
+			retType = "[]" + retType
+		}
+		getter, err := gen.Func("Get"+cfg.fieldName(elem.Name)).
+			Receiver("t "+data.Type).
+			Returns(retType).
+			Body(`
+			return t.%s
+		`, cfg.fieldName(elem.Name)).Decl()
+		if err != nil {
+			return nil, err
+		}
+		methods = append(methods, getter)
+	}
+	for _, elem := range t.InheritedAttrs {
+		retType := cfg.exprString(elem.Type)
+		if elem.Plural {
+			retType = "[]" + retType
+		}
+		getter, err := gen.Func("Get"+cfg.fieldName(elem.Name)).
+			Receiver("t "+data.Type).
+			Returns(retType).
+			Body(`
+			return t.%s
+		`, cfg.fieldName(elem.Name)).Decl()
+		if err != nil {
+			return nil, err
+		}
+		methods = append(methods, getter)
+	}
+	if len(overrides) == 0 {
+		return methods, nil
+	}
+
+	unmarshal, err := gen.Func("UnmarshalXML").
 		Receiver("t *"+data.Type).
 		Args("d *xml.Decoder", "start xml.StartElement").
 		Returns("error").
@@ -939,8 +965,9 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 			return d.DecodeElement(&overlay, &start)
 		`, data).Decl()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
+	methods = append(methods, unmarshal)
 
 	// We don't set defaults in MarshalXML; there's no way to distinguish
 	// an intentional zero value from "no value", and the consumer of the
@@ -952,11 +979,11 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 		}
 	}
 	if len(nonDefaultOverrides) == 0 {
-		return nil, unmarshal, nil
+		return methods, nil
 	}
 
 	data.Overrides = nonDefaultOverrides
-	marshal, err = gen.Func("MarshalXML").
+	marshal, err := gen.Func("MarshalXML").
 		Receiver("t "+data.Type).
 		Args("e *xml.Encoder", "start xml.StartElement").
 		Returns("error").
@@ -975,7 +1002,11 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 
 			return e.EncodeElement(layout, start)
 		`, data).Decl()
-	return marshal, unmarshal, err
+	if err != nil {
+		return nil, err
+	}
+	methods = append(methods, marshal)
+	return methods, err
 }
 
 func (cfg *Config) genSimpleType(t *xsd.SimpleType) ([]spec, error) {

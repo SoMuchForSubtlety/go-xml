@@ -35,18 +35,6 @@ type Person struct {
 	Qualification string    `xml:"http://dyomedea.com/ns/library qualification,omitempty"`
 }
 
-func (t Person) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	type T Person
-	var layout struct {
-		*T
-		Born *xsdDate `xml:"http://dyomedea.com/ns/library born"`
-		Dead *xsdDate `xml:"http://dyomedea.com/ns/library dead,omitempty"`
-	}
-	layout.T = (*T)(&t)
-	layout.Born = (*xsdDate)(&layout.T.Born)
-	layout.Dead = (*xsdDate)(&layout.T.Dead)
-	return e.EncodeElement(layout, start)
-}
 func (t *Person) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Person
 	var overlay struct {
@@ -58,6 +46,18 @@ func (t *Person) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	overlay.Born = (*xsdDate)(&overlay.T.Born)
 	overlay.Dead = (*xsdDate)(&overlay.T.Dead)
 	return d.DecodeElement(&overlay, &start)
+}
+func (t Person) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	type T Person
+	var layout struct {
+		*T
+		Born *xsdDate `xml:"http://dyomedea.com/ns/library born"`
+		Dead *xsdDate `xml:"http://dyomedea.com/ns/library dead,omitempty"`
+	}
+	layout.T = (*T)(&t)
+	layout.Born = (*xsdDate)(&layout.T.Born)
+	layout.Dead = (*xsdDate)(&layout.T.Dead)
+	return e.EncodeElement(layout, start)
 }
 
 type xsdDate time.Time

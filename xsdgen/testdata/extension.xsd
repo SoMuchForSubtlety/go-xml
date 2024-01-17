@@ -1,0 +1,47 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://example.org"
+  targetNamespace="http://example.org">
+  <xs:import namespace="http://example2.org" />
+  <xs:element name="TypeA">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="ns:Response">
+          <xs:sequence>
+            <xs:element name="intField">
+              <xs:simpleType>
+                <xs:restriction base="xs:integer">
+                  <xs:totalDigits value="15" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="TypeB">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="ns:Response">
+          <xs:sequence>
+            <xs:element name="stringField">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Response">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="Error" nillable="true" type="xs:string">
+      </xs:element>
+      <xs:element maxOccurs="10" minOccurs="0" name="Warning" nillable="true" type="xs:string">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

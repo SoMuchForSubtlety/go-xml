@@ -74,6 +74,10 @@ func TestExamples(t *testing.T) {
 			sourceFiles: []string{"testdata/dupe-enum.xsd"},
 		},
 		{
+			name:        "optional time",
+			sourceFiles: []string{"testdata/optional-time.xsd"},
+		},
+		{
 			name:        "anon",
 			sourceFiles: []string{"testdata/anon.xsd"},
 		},
@@ -84,6 +88,10 @@ func TestExamples(t *testing.T) {
 		{
 			name:        "redundant union",
 			sourceFiles: []string{"testdata/redundant-union.xsd"},
+		},
+		{
+			name:        "extension",
+			sourceFiles: []string{"testdata/extension.xsd"},
 		},
 	}
 

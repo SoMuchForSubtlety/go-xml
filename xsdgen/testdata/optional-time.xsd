@@ -1,0 +1,15 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://example.org"
+  targetNamespace="http://example.org">
+
+  <xs:element name="Type1">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="1" minOccurs="0" name="optionalTime" nillable="true"
+          type="xs:dateTime"> </xs:element>
+        <xs:element maxOccurs="1" minOccurs="1" name="requiredTime" nillable="false"
+          type="xs:dateTime"> </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

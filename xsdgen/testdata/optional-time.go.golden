@@ -13,18 +13,6 @@ type Type1 struct {
 	RequiredTime time.Time `xml:"http://example.org requiredTime"`
 }
 
-func (t Type1) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	type T Type1
-	var layout struct {
-		*T
-		OptionalTime *xsdDateTime `xml:"http://example.org optionalTime,omitempty"`
-		RequiredTime *xsdDateTime `xml:"http://example.org requiredTime"`
-	}
-	layout.T = (*T)(&t)
-	layout.OptionalTime = (*xsdDateTime)(&layout.T.OptionalTime)
-	layout.RequiredTime = (*xsdDateTime)(&layout.T.RequiredTime)
-	return e.EncodeElement(layout, start)
-}
 func (t *Type1) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Type1
 	var overlay struct {
@@ -36,6 +24,18 @@ func (t *Type1) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	overlay.OptionalTime = (*xsdDateTime)(&overlay.T.OptionalTime)
 	overlay.RequiredTime = (*xsdDateTime)(&overlay.T.RequiredTime)
 	return d.DecodeElement(&overlay, &start)
+}
+func (t Type1) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	type T Type1
+	var layout struct {
+		*T
+		OptionalTime *xsdDateTime `xml:"http://example.org optionalTime,omitempty"`
+		RequiredTime *xsdDateTime `xml:"http://example.org requiredTime"`
+	}
+	layout.T = (*T)(&t)
+	layout.OptionalTime = (*xsdDateTime)(&layout.T.OptionalTime)
+	layout.RequiredTime = (*xsdDateTime)(&layout.T.RequiredTime)
+	return e.EncodeElement(layout, start)
 }
 
 type xsdDateTime time.Time

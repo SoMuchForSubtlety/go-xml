@@ -274,6 +274,10 @@ type ComplexType struct {
 	// If true, this type is allowed to contain character data that is
 	// not part of any sub-element.
 	Mixed bool
+	// The elements inherited from extensions
+	InheritedElements []*Element
+	// The attributes inherited from extensions
+	InheritedAttrs []Attribute
 }
 
 func (*ComplexType) isType() {}
