@@ -38,9 +38,19 @@
 
   <xs:complexType name="Response">
     <xs:sequence>
-      <xs:element maxOccurs="1" minOccurs="0" name="Error" nillable="true" type="xs:string">
+      <xs:element maxOccurs="1" minOccurs="0" name="Error" nillable="true" type="ns:Error">
       </xs:element>
       <xs:element maxOccurs="10" minOccurs="0" name="Warning" nillable="true" type="xs:string">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="message" nillable="true" type="xs:string">
+      </xs:element>
+      <xs:element maxOccurs="1" minOccurs="1" name="code" nillable="true" type="xs:string">
       </xs:element>
     </xs:sequence>
   </xs:complexType>

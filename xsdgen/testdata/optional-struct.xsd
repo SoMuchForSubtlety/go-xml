@@ -1,0 +1,62 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://example.org"
+  targetNamespace="http://example.org">
+
+
+  <xs:element name="TypeB">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" nillable="true" name="deliveryDays" type="ns:DateRange">
+          <xs:annotation>
+            <xs:documentation>Range of Delivery Days the Order applies to.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="errors" nillable="true"
+          type="ns:Error">
+          <xs:annotation>
+            <xs:documentation>Range of Delivery Days the Order applies to.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="xxx" type="ns:ooo" minOccurs="0" maxOccurs="unbounded"></xs:element>
+        <xs:element name="stringField">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element name="text" type="xs:string">
+      </xs:element>
+      <xs:element name="code" type="xs:string">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ooo">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+
+
+  <xs:complexType name="DateRange">
+    <xs:annotation>
+      <xs:documentation>A Range Object that indicates a Date Range the date Struct has to and from
+        as Date Types</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="from" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Starting date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="to" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Ending date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

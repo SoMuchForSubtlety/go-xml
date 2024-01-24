@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns="http://example.org/" targetNamespace="http://example.org/">
+  xmlns:ns="http://example.org/" targetNamespace="http://example.org/">
 
   <xs:simpleType name="dType">
     <xs:annotation>
       <xs:documentation>type for weekday</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
-      <xs:enumeration value="MON"/>
-      <xs:enumeration value="TUE"/>
-      <xs:enumeration value="WED"/>
-      <xs:enumeration value="THU"/>
-      <xs:enumeration value="FRI"/>
-      <xs:enumeration value="SAT"/>
-      <xs:enumeration value="SUN"/>
+      <xs:enumeration value="MON" />
+      <xs:enumeration value="TUE" />
+      <xs:enumeration value="WED" />
+      <xs:enumeration value="THU" />
+      <xs:enumeration value="FRI" />
+      <xs:enumeration value="SAT" />
+      <xs:enumeration value="SUN" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -22,9 +22,9 @@
       <xs:documentation>integer enum</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:integer">
-      <xs:enumeration value="1"/>
-      <xs:enumeration value="2"/>
-      <xs:enumeration value="3"/>
+      <xs:enumeration value="1" />
+      <xs:enumeration value="2" />
+      <xs:enumeration value="3" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -33,10 +33,23 @@
       <xs:documentation>float enum</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:decimal">
-      <xs:enumeration value="0.9"/>
-      <xs:enumeration value="0.333333333"/>
-      <xs:enumeration value="0.0"/>
+      <xs:enumeration value="0.9" />
+      <xs:enumeration value="0.333333333" />
+      <xs:enumeration value="0.0" />
     </xs:restriction>
   </xs:simpleType>
+
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element maxOccurs="1" minOccurs="0" name="duration" nillable="false" type="ns:dType">
+        <xs:annotation>
+          <xs:documentation>The duration.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="code" type="xs:string">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
 
 </xs:schema>

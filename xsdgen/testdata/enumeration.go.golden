@@ -16,6 +16,11 @@ const (
 	DType_SUN DType = "SUN"
 )
 
+type Error struct {
+	Duration DType  `xml:"http://example.org/ duration,omitempty"`
+	Code     string `xml:"http://example.org/ code"`
+}
+
 // float enum
 // May be one of 0.9, 0.333333333, 0.0
 type FloatType float64

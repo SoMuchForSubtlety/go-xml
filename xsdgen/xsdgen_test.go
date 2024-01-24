@@ -1,11 +1,11 @@
 package xsdgen
 
 import (
-	"bytes"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExamples(t *testing.T) {
@@ -93,6 +93,10 @@ func TestExamples(t *testing.T) {
 			name:        "extension",
 			sourceFiles: []string{"testdata/extension.xsd"},
 		},
+		{
+			name:        "optional struct",
+			sourceFiles: []string{"testdata/optional-struct.xsd"},
+		},
 	}
 
 	for _, c := range cases {
@@ -110,7 +114,7 @@ func (t *testLogger) Printf(format string, v ...interface{}) {
 }
 
 func testGen(t *testing.T, ns string, files ...string) string {
-	file, err := ioutil.TempFile("", "xsdgen")
+	file, err := os.CreateTemp("", "xsdgen")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,7 +132,7 @@ func testGen(t *testing.T, ns string, files ...string) string {
 	if err != nil {
 		t.Error(err)
 	}
-	data, err := ioutil.ReadFile(file.Name())
+	data, err := os.ReadFile(file.Name())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,16 +140,14 @@ func testGen(t *testing.T, ns string, files ...string) string {
 	goldenPath := files[0][0:len(files[0])-len(ext)] + ".go.golden"
 	// check if we have a golden file to compare to
 	if _, err := os.Stat(goldenPath); err == nil {
-		goldenData, err := ioutil.ReadFile(goldenPath)
+		goldenData, err := os.ReadFile(goldenPath)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !bytes.Equal(data, goldenData) {
-			t.Errorf("output does not match %s", goldenPath)
-		}
+		assert.Equal(t, string(goldenData), string(data), "the generated code does not match the expected output")
 	} else {
 		// create a new golden file if there is none
-		err = ioutil.WriteFile(goldenPath, data, 0644)
+		err = os.WriteFile(goldenPath, data, 0644)
 		if err != nil {
 			t.Fatal(err)
 		}

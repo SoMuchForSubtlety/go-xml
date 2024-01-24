@@ -441,20 +441,38 @@ func (cfg *Config) filterFields(t *xsd.ComplexType) ([]xsd.Attribute, []xsd.Elem
 
 // Return the identifier for non-builtin types, or the Go expression
 // mapped to the built-in type.
-func (cfg *Config) expr(t xsd.Type) (ast.Expr, error) {
-	if t, ok := t.(xsd.Builtin); ok {
-		ex := builtinExpr(t)
+func (cfg *Config) expr(t xsd.Type, optional bool, plural bool) (ast.Expr, error) {
+	var ex ast.Expr
+	var simple bool
+	if bt, ok := t.(xsd.Builtin); ok {
+		simple = true
+		ex = builtinExpr(bt)
 		if ex == nil {
-			return nil, fmt.Errorf("Unknown built-in type %q", t.Name().Local)
+			return nil, fmt.Errorf("Unknown built-in type %q", bt.Name().Local)
 		}
-		return ex, nil
+	} else {
+		ex = ast.NewIdent(cfg.public(xsd.XMLName(t)))
+		if _, ok := t.(*xsd.SimpleType); ok {
+			simple = true
+		}
 	}
-	return ast.NewIdent(cfg.public(xsd.XMLName(t))), nil
+	if plural {
+		return &ast.ArrayType{
+			Elt: ex,
+		}, nil
+	}
+	if ident, isIdent := ex.(*ast.Ident); isIdent && !simple && optional {
+		return &ast.StarExpr{
+			Star: ident.NamePos,
+			X:    ident,
+		}, nil
+	}
+	return ex, nil
 }
 
-func (cfg *Config) exprString(t xsd.Type) string {
+func (cfg *Config) nonTrivialExprString(t xsd.Type, optional, plural bool) string {
 	var buf bytes.Buffer
-	expr, err := cfg.expr(t)
+	expr, err := cfg.expr(t, optional, plural)
 	if err != nil {
 		return ""
 	}
@@ -464,6 +482,10 @@ func (cfg *Config) exprString(t xsd.Type) string {
 		panic(fmt.Errorf("Error formatting node expression %#v: %v", expr, err))
 	}
 	return buf.String()
+}
+
+func (cfg *Config) exprString(t xsd.Type) string {
+	return cfg.nonTrivialExprString(t, false, false)
 }
 
 // NameOf converts a canonical XML name to a Go identifier,

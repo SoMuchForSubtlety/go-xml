@@ -92,21 +92,21 @@ type PublshInformation struct {
 }
 
 type SdnEntry struct {
-	Uid              int              `xml:"http://tempuri.org/sdnList.xsd uid"`
-	FirstName        string           `xml:"http://tempuri.org/sdnList.xsd firstName,omitempty"`
-	LastName         string           `xml:"http://tempuri.org/sdnList.xsd lastName"`
-	Title            string           `xml:"http://tempuri.org/sdnList.xsd title,omitempty"`
-	SdnType          string           `xml:"http://tempuri.org/sdnList.xsd sdnType"`
-	Remarks          string           `xml:"http://tempuri.org/sdnList.xsd remarks,omitempty"`
-	ProgramList      ProgramList      `xml:"http://tempuri.org/sdnList.xsd programList"`
-	IdList           IdList           `xml:"http://tempuri.org/sdnList.xsd idList,omitempty"`
-	AkaList          AkaList          `xml:"http://tempuri.org/sdnList.xsd akaList,omitempty"`
-	AddressList      AddressList      `xml:"http://tempuri.org/sdnList.xsd addressList,omitempty"`
-	NationalityList  NationalityList  `xml:"http://tempuri.org/sdnList.xsd nationalityList,omitempty"`
-	CitizenshipList  CitizenshipList  `xml:"http://tempuri.org/sdnList.xsd citizenshipList,omitempty"`
-	DateOfBirthList  DateOfBirthList  `xml:"http://tempuri.org/sdnList.xsd dateOfBirthList,omitempty"`
-	PlaceOfBirthList PlaceOfBirthList `xml:"http://tempuri.org/sdnList.xsd placeOfBirthList,omitempty"`
-	VesselInfo       VesselInfo       `xml:"http://tempuri.org/sdnList.xsd vesselInfo,omitempty"`
+	Uid              int               `xml:"http://tempuri.org/sdnList.xsd uid"`
+	FirstName        string            `xml:"http://tempuri.org/sdnList.xsd firstName,omitempty"`
+	LastName         string            `xml:"http://tempuri.org/sdnList.xsd lastName"`
+	Title            string            `xml:"http://tempuri.org/sdnList.xsd title,omitempty"`
+	SdnType          string            `xml:"http://tempuri.org/sdnList.xsd sdnType"`
+	Remarks          string            `xml:"http://tempuri.org/sdnList.xsd remarks,omitempty"`
+	ProgramList      ProgramList       `xml:"http://tempuri.org/sdnList.xsd programList"`
+	IdList           *IdList           `xml:"http://tempuri.org/sdnList.xsd idList,omitempty"`
+	AkaList          *AkaList          `xml:"http://tempuri.org/sdnList.xsd akaList,omitempty"`
+	AddressList      *AddressList      `xml:"http://tempuri.org/sdnList.xsd addressList,omitempty"`
+	NationalityList  *NationalityList  `xml:"http://tempuri.org/sdnList.xsd nationalityList,omitempty"`
+	CitizenshipList  *CitizenshipList  `xml:"http://tempuri.org/sdnList.xsd citizenshipList,omitempty"`
+	DateOfBirthList  *DateOfBirthList  `xml:"http://tempuri.org/sdnList.xsd dateOfBirthList,omitempty"`
+	PlaceOfBirthList *PlaceOfBirthList `xml:"http://tempuri.org/sdnList.xsd placeOfBirthList,omitempty"`
+	VesselInfo       *VesselInfo       `xml:"http://tempuri.org/sdnList.xsd vesselInfo,omitempty"`
 }
 
 type SdnList struct {

@@ -3,7 +3,7 @@
 package ws
 
 type Type1 struct {
-	TypeA TypeA `xml:"http://example.org TypeA,omitempty"`
+	TypeA *TypeA `xml:"http://example.org TypeA,omitempty"`
 }
 
 type Type2 struct {

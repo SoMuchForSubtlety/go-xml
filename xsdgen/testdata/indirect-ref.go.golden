@@ -7,5 +7,5 @@ type ReferencedType struct {
 }
 
 type Type1 struct {
-	ReferencedType ReferencedType `xml:"http://example.org/ ReferencedType,omitempty"`
+	ReferencedType *ReferencedType `xml:"http://example.org/ ReferencedType,omitempty"`
 }

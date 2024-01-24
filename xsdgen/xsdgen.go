@@ -718,7 +718,7 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 			}
 			base = xsd.Base(base)
 		}
-		expr, err := cfg.expr(base)
+		expr, err := cfg.expr(base, false, false) // TODO: double-check optional and plural
 		if err != nil {
 			return nil, fmt.Errorf("%s base type %s: %v",
 				t.Name.Local, xsd.XMLName(t.Base).Local, err)
@@ -795,7 +795,7 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 			options = ",omitempty"
 		}
 		tag := fmt.Sprintf(`xml:"%s %s%s"`, el.Name.Space, el.Name.Local, options)
-		base, err := cfg.expr(el.Type)
+		base, err := cfg.expr(el.Type, el.Nillable || el.Optional, el.Plural)
 		if err != nil {
 			return nil, fmt.Errorf("%s element %s: %v", t.Name.Local, el.Name.Local, err)
 		}
@@ -810,10 +810,10 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 			if b, ok := el.Type.(xsd.Builtin); ok && b == xsd.AnyType {
 				cfg.debugf("complexType %s: defaulting wildcard element to []string", t.Name.Local)
 				base = builtinExpr(xsd.String)
+				if el.Plural {
+					base = &ast.ArrayType{Elt: base}
+				}
 			}
-		}
-		if el.Plural {
-			base = &ast.ArrayType{Elt: base}
 		}
 		fields = append(fields, name, base, gen.String(tag))
 		if el.Default != "" || nonTrivialBuiltin(el.Type) {
@@ -853,7 +853,7 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 		} else {
 			tag = fmt.Sprintf(`xml:"%s,attr%s"`, attr.Name.Local, options)
 		}
-		base, err := cfg.expr(attr.Type)
+		base, err := cfg.expr(attr.Type, false, false)
 		if err != nil {
 			return nil, fmt.Errorf("%s attribute %s: %v", t.Name.Local, attr.Name.Local, err)
 		}
@@ -889,8 +889,8 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 		helperTypes: helperTypes,
 	}
 	methods, err := cfg.genComplexTypeMethods(t, overrides)
-		if err != nil {
-			return result, err
+	if err != nil {
+		return result, err
 	}
 	s.methods = append(s.methods, methods...)
 	result = append(result, s)
@@ -907,10 +907,7 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 
 	var methods []*ast.FuncDecl
 	for _, elem := range t.InheritedElements {
-		retType := cfg.exprString(elem.Type)
-		if elem.Plural {
-			retType = "[]" + retType
-		}
+		retType := cfg.nonTrivialExprString(elem.Type, elem.Optional, elem.Plural)
 		getter, err := gen.Func("Get"+cfg.fieldName(elem.Name)).
 			Receiver("t "+data.Type).
 			Returns(retType).
@@ -923,10 +920,7 @@ func (cfg *Config) genComplexTypeMethods(t *xsd.ComplexType, overrides []fieldOv
 		methods = append(methods, getter)
 	}
 	for _, elem := range t.InheritedAttrs {
-		retType := cfg.exprString(elem.Type)
-		if elem.Plural {
-			retType = "[]" + retType
-		}
+		retType := cfg.nonTrivialExprString(elem.Type, elem.Optional, elem.Plural)
 		getter, err := gen.Func("Get"+cfg.fieldName(elem.Name)).
 			Receiver("t "+data.Type).
 			Returns(retType).
@@ -1028,7 +1022,7 @@ func (cfg *Config) genSimpleType(t *xsd.SimpleType) ([]spec, error) {
 		})
 		return result, nil
 	}
-	base, err := cfg.expr(t.Base)
+	base, err := cfg.expr(t.Base, false, t.List)
 	if err != nil {
 		return nil, fmt.Errorf("simpleType %s: base type %s: %v",
 			t.Name.Local, xsd.XMLName(t.Base).Local, err)
@@ -1112,7 +1106,7 @@ func (cfg *Config) addSpecConstants(t *xsd.SimpleType, s spec) spec {
 // methods.
 func (cfg *Config) genSimpleListSpec(t *xsd.SimpleType) ([]spec, error) {
 	cfg.debugf("generating Go source for simple list %q", xsd.XMLName(t).Local)
-	expr, err := cfg.expr(t.Base)
+	expr, err := cfg.expr(t.Base, false, true) // TODO: double-check plural
 	if err != nil {
 		return nil, err
 	}

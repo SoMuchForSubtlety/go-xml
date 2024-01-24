@@ -7,9 +7,9 @@ type ListType struct {
 }
 
 type Type1 struct {
-	ListType ListType `xml:"http://example.org/ ListType,omitempty"`
+	ListType *ListType `xml:"http://example.org/ ListType,omitempty"`
 }
 
 type Type2 struct {
-	ListType ListType `xml:"http://example.org/ ListType,omitempty"`
+	ListType *ListType `xml:"http://example.org/ ListType,omitempty"`
 }

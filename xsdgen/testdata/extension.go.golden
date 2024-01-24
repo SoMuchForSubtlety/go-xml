@@ -2,33 +2,38 @@
 
 package ws
 
+type Error struct {
+	Message string `xml:"http://example.org message,omitempty"`
+	Code    string `xml:"http://example.org code,omitempty"`
+}
+
 type Response struct {
-	Error   string   `xml:"http://example.org Error,omitempty"`
+	Error   *Error   `xml:"http://example.org Error,omitempty"`
 	Warning []string `xml:"http://example.org Warning,omitempty"`
 }
 
 type TypeA struct {
-	Error    string   `xml:"http://example.org Error,omitempty"`
+	Error    *Error   `xml:"http://example.org Error,omitempty"`
 	Warning  []string `xml:"http://example.org Warning,omitempty"`
 	IntField int      `xml:"http://example.org intField"`
 }
 
-func (t *TypeA) GetError() string {
+func (t TypeA) GetError() *Error {
 	return t.Error
 }
-func (t *TypeA) GetWarning() []string {
+func (t TypeA) GetWarning() []string {
 	return t.Warning
 }
 
 type TypeB struct {
-	Error       string   `xml:"http://example.org Error,omitempty"`
+	Error       *Error   `xml:"http://example.org Error,omitempty"`
 	Warning     []string `xml:"http://example.org Warning,omitempty"`
 	StringField string   `xml:"http://example.org stringField"`
 }
 
-func (t *TypeB) GetError() string {
+func (t TypeB) GetError() *Error {
 	return t.Error
 }
-func (t *TypeB) GetWarning() []string {
+func (t TypeB) GetWarning() []string {
 	return t.Warning
 }
