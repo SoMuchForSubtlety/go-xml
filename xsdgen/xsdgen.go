@@ -184,11 +184,7 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 
 	// sort types so the type naming deduplication is deterministic
 	sort.SliceStable(allTypes, func(i, j int) bool {
-		namei, namej := name(allTypes[i]), name(allTypes[j])
-		if namei.Space != namej.Space {
-			return namei.Space < namej.Space
-		}
-		return namei.Space < namej.Space
+		return name(allTypes[i]).Space < name(allTypes[j]).Space
 	})
 
 	takenNames := make(map[string]xsd.Type)
