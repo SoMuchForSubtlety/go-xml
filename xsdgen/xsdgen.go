@@ -147,9 +147,7 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 			all[k] = v
 		}
 	}
-	// sort namespaces so the type naming deduplication is deterministic
-	sort.Slice(primaries, func(i, j int) bool { return primaries[i].TargetNS > primaries[j].TargetNS })
-	sort.Slice(deps, func(i, j int) bool { return deps[i].TargetNS > deps[j].TargetNS })
+
 	for _, dep := range deps {
 		for k, v := range dep.Types {
 			all[k] = v
@@ -184,19 +182,20 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 		allTypes = append(allTypes, types...)
 	}
 
+	// sort types so the type naming deduplication is deterministic
+	sort.SliceStable(allTypes, func(i, j int) bool {
+		namei, namej := name(allTypes[i]), name(allTypes[j])
+		if namei.Space != namej.Space {
+			return namei.Space < namej.Space
+		}
+		return namei.Space < namej.Space
+	})
+
 	takenNames := make(map[string]xsd.Type)
 	cfg.typeNameOverrides = make(map[xml.Name]string)
 	// first pass to deduplicate type names
 	for _, t := range allTypes {
-		var xmlName xml.Name
-		switch t := t.(type) {
-		case *xsd.SimpleType:
-			xmlName = t.Name
-		case *xsd.ComplexType:
-			xmlName = t.Name
-		default:
-			continue
-		}
+		xmlName := name(t)
 		name := cfg.public(xmlName)
 		if existing, taken := takenNames[name]; taken {
 			var existingName xml.Name
@@ -492,6 +491,19 @@ func (cfg *Config) bustUnion(t *xsd.SimpleType) xsd.Type {
 		return actual
 	}
 	return underlying
+}
+
+func name(t xsd.Type) xml.Name {
+	switch t := t.(type) {
+	case *xsd.SimpleType:
+		return t.Name
+	case *xsd.ComplexType:
+		return t.Name
+	case xsd.Builtin:
+		return t.Name()
+	default:
+		return xml.Name{}
+	}
 }
 
 func (cfg *Config) flatten1(t xsd.Type, push func(xsd.Type), depth int) xsd.Type {
