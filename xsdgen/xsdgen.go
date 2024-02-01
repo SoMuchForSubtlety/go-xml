@@ -147,6 +147,9 @@ func (cfg *Config) gen(primaries, deps []xsd.Schema) (*Code, error) {
 			all[k] = v
 		}
 	}
+	// sort namespaces so the type naming deduplication is deterministic
+	sort.Slice(primaries, func(i, j int) bool { return primaries[i].TargetNS > primaries[j].TargetNS })
+	sort.Slice(deps, func(i, j int) bool { return deps[i].TargetNS > deps[j].TargetNS })
 	for _, dep := range deps {
 		for k, v := range dep.Types {
 			all[k] = v
