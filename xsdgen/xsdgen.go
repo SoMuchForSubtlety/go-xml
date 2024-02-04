@@ -712,7 +712,7 @@ func (gen *nameGenerator) element(base xml.Name) ast.Expr {
 
 func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 	var result []spec
-	var fields []ast.Expr
+	var fields []*ast.Field
 	var overrides []fieldOverride
 	var helperTypes []xml.Name
 
@@ -736,20 +736,17 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 		}
 		switch b := base.(type) {
 		case *xsd.SimpleType:
-			cfg.debugf("complexType %[1]s extends simpleType %[2]s. Naming"+
-				" the chardata struct field after %[2]s", t.Name.Local, b.Name.Local)
-			fields = append(fields, expr, expr, gen.String(`xml:",chardata"`))
+			cfg.debugf("complexType %[1]s extends simpleType %[2]s. Naming the chardata struct field after %[2]s", t.Name.Local, b.Name.Local)
+			fields = append(fields, gen.Field(expr, expr, gen.String(`xml:",chardata"`), b.Doc))
 		case xsd.Builtin:
 			if b == xsd.AnyType {
 				// extending anyType doesn't really make sense, but
 				// we can just ignore it.
-				cfg.debugf("complexType %s: don't know how to extend anyType, ignoring",
-					t.Name.Local)
+				cfg.debugf("complexType %s: don't know how to extend anyType, ignoring", t.Name.Local)
 				break
 			}
 			// Name the field after the xsd type name.
-			cfg.debugf("complexType %[1]s extends %[2]s, naming chardata struct field %[2]s",
-				t.Name.Local, b)
+			cfg.debugf("complexType %[1]s extends %[2]s, naming chardata struct field %[2]s", t.Name.Local, b)
 			name := "Value"
 			tag := `xml:",chardata"`
 			if nonTrivialBuiltin(b) {
@@ -766,7 +763,7 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 					Type:      b,
 				})
 			}
-			fields = append(fields, namegen.unique(name), expr, gen.String(tag))
+			fields = append(fields, gen.Field(namegen.unique(name), expr, gen.String(tag), ""))
 		default:
 			panic(fmt.Errorf("%s does not derive from a builtin type", t.Name.Local))
 		}
@@ -826,7 +823,8 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 				}
 			}
 		}
-		fields = append(fields, name, base, gen.String(tag))
+		fields = append(fields, gen.Field(name, base, gen.String(tag), el.Doc))
+
 		if el.Default != "" || nonTrivialBuiltin(el.Type) {
 			typeName := cfg.exprString(el.Type)
 			if nonTrivialBuiltin(el.Type) {
@@ -870,7 +868,8 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 		}
 		cfg.debugf("adding %s attribute %s as %v", t.Name.Local, attr.Name.Local, base)
 		name := namegen.attribute(attr.Name)
-		fields = append(fields, name, base, gen.String(tag))
+		fields = append(fields, gen.Field(name, base, gen.String(tag), attr.Doc))
+
 		if attr.Default != "" || nonTrivialBuiltin(attr.Type) {
 			typeName := cfg.exprString(attr.Type)
 			if nonTrivialBuiltin(attr.Type) {
@@ -891,11 +890,14 @@ func (cfg *Config) genComplexType(t *xsd.ComplexType) ([]spec, error) {
 			})
 		}
 	}
-	expr := gen.Struct(fields...)
 	s := spec{
-		doc:         t.Doc,
-		name:        cfg.public(t.Name),
-		expr:        expr,
+		doc:  t.Doc,
+		name: cfg.public(t.Name),
+		expr: &ast.StructType{
+			Fields: &ast.FieldList{
+				List: fields,
+			},
+		},
 		xsdType:     t,
 		helperTypes: helperTypes,
 	}

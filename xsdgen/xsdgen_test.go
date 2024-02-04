@@ -97,6 +97,10 @@ func TestExamples(t *testing.T) {
 			name:        "optional struct",
 			sourceFiles: []string{"testdata/optional-struct.xsd"},
 		},
+		{
+			name:        "water quality",
+			sourceFiles: []string{"testdata/LIT10054_WaterQualityMultiReturn.xsd"},
+		},
 	}
 
 	for _, c := range cases {
