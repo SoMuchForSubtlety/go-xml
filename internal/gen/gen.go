@@ -67,31 +67,30 @@ func ToString(expr ast.Expr) (string, error) {
 	return buf.String(), err
 }
 
-// Struct creates a struct{} expression. The arguments are a series
-// of name/type/tag tuples. Name must be of type *ast.Ident, type
-// must be of type ast.Expr, and tag must be of type *ast.BasicLit,
-// The number of arguments must be a multiple of 3, or a run-time
-// panic will occur.
-func Struct(args ...ast.Expr) *ast.StructType {
-	fields := new(ast.FieldList)
-	if len(args)%3 != 0 {
-		panic("Number of args to FieldList must be a multiple of 3, got " + strconv.Itoa(len(args)))
+func Field(name, typ, tag ast.Expr, annotation string) *ast.Field {
+	var doc *ast.CommentGroup
+	if annotation != "" {
+		var commentLines []*ast.Comment
+		// each line needs to be a separate comment
+		docLines := strings.Split(strings.ReplaceAll(annotation, "\r\n", "\n"), "\n")
+		for i, line := range docLines {
+			commentLine := "// " + line
+			if i == 0 {
+				// TODO: this should probably be done with the Slash field of the ast.Comment, but I can't figure it out
+				commentLine = "\n" + commentLine
+			}
+			commentLines = append(commentLines, &ast.Comment{Text: commentLine})
+		}
+		doc = &ast.CommentGroup{
+			List: commentLines,
+		}
 	}
-	for i := 0; i < len(args); i += 3 {
-		var field ast.Field
-		name, typ, tag := args[i], args[i+1], args[i+2]
-		if name != nil {
-			field.Names = []*ast.Ident{name.(*ast.Ident)}
-		}
-		if typ != nil {
-			field.Type = typ
-		}
-		if tag != nil {
-			field.Tag = tag.(*ast.BasicLit)
-		}
-		fields.List = append(fields.List, &field)
+	return &ast.Field{
+		Type:  typ,
+		Names: []*ast.Ident{name.(*ast.Ident)},
+		Tag:   tag.(*ast.BasicLit),
+		Doc:   doc,
 	}
-	return &ast.StructType{Fields: fields}
 }
 
 // FieldList generates a field list from strings in the form "[name]

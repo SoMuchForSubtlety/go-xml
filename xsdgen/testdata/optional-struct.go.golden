@@ -5,8 +5,10 @@ package ws
 // A Range Object that indicates a Date Range the date Struct has to and from
 // as Date Types
 type DateRange struct {
+	// Starting date
 	From string `xml:"http://example.org from"`
-	To   string `xml:"http://example.org to"`
+	// Ending date
+	To string `xml:"http://example.org to"`
 }
 
 type Error struct {
@@ -15,8 +17,10 @@ type Error struct {
 }
 
 type TypeB struct {
+	// Range of Delivery Days the Order applies to.
 	DeliveryDays *DateRange `xml:"http://example.org deliveryDays,omitempty"`
-	Errors       []Error    `xml:"http://example.org errors,omitempty"`
-	Xxx          []string   `xml:"http://example.org xxx,omitempty"`
-	StringField  string     `xml:"http://example.org stringField"`
+	// Range of Delivery Days the Order applies to.
+	Errors      []Error  `xml:"http://example.org errors,omitempty"`
+	Xxx         []string `xml:"http://example.org xxx,omitempty"`
+	StringField string   `xml:"http://example.org stringField"`
 }
